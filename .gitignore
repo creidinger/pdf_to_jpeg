@@ -160,3 +160,7 @@ cython_debug/
 #.idea/
 
 test.py
+
+*.pdf
+*.jpeg
+*.jpg
