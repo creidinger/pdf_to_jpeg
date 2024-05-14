@@ -32,8 +32,10 @@ def pdf_to_jpeg(file_name):
         logging.error("pdf_to_jpeg: error")
         logging.error(f"pdf_to_jpeg: file_name {file_name}")
         logging.error(f"pdf_to_jpeg: \n{e}")
+        return False
 
     logging.info(f"pdf_to_jpeg: success | {jpg_file}")
+    return True
 
 
 def get_data(json_file):
@@ -77,6 +79,8 @@ def get_pdf_file(file_name, pdf_file):
 
 if __name__ == "__main__":
     json_file = "./assets/data.json"
+    errors = []
+    error_id = 0
 
     data = get_data(json_file=json_file)
 
@@ -85,4 +89,17 @@ if __name__ == "__main__":
         pdf_file = file["s3_url"]
 
         get_pdf_file(file_name=file_name, pdf_file=pdf_file)
-        pdf_to_jpeg(file_name=file_name)
+
+        copy_success = pdf_to_jpeg(file_name=file_name)
+
+        # if there is an error, store the error
+        if not copy_success:
+            error = {"id": error_id, "file_name": file_name}
+            errors.append(error)
+
+            with open("./assets/errors.json", "w") as f:
+                json.dump(errors, f, indent=4)
+
+            error_id += 1
+
+    logging.info(errors)
